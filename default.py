@@ -40,13 +40,19 @@ def search():
           search_string = keyboard.getText().replace(" ","+")
           listVideos("http://www.bestofyoutube.com/search.php?q="+search_string)
 
-def playVideo(id):
+def playVideo(id, name):
         if xbox==True:
           url = "plugin://video/YouTube/?path=/root/video&action=play_video&videoid=" + id
         else:
           url = "plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid=" + id
         listitem = xbmcgui.ListItem(path=url)
-        return xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
+        xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
+        
+        titleNotify=addon.getSetting("titleNotify")
+        if titleNotify=="true":
+            xbmc.sleep(5000)
+            if xbmc.Player().isPlaying():
+                xbmc.executebuiltin('XBMC.Notification("Best Of Youtube", %s)' % name) 
 
 def listLatest():
         content = getUrl("http://feeds.feedburner.com/bestofyoutubedotcom")
@@ -105,7 +111,7 @@ def cleanTitle(title):
         return title
 
 def addLink(name,url,mode,iconimage):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
@@ -143,7 +149,8 @@ if mode == 'listVideos':
 elif mode == 'listLatest':
     listLatest()
 elif mode == 'playVideo':
-    playVideo(url)
+    name=urllib.unquote_plus(params.get('name'))
+    playVideo(url, name)
 elif mode == 'bestOf':
     bestOf()
 elif mode == 'search':
