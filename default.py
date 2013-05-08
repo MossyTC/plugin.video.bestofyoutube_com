@@ -7,6 +7,8 @@ pluginhandle = int(sys.argv[1])
 xbox = xbmc.getCondVisibility("System.Platform.xbox")
 addon = xbmcaddon.Addon(id='plugin.video.bestofyoutube_com')
 translation = addon.getLocalizedString
+icon = addon.getAddonInfo('icon')
+addonname = addon.getAddonInfo('name')
 
 forceViewMode=addon.getSetting("forceViewMode")
 if forceViewMode=="true":
@@ -52,7 +54,7 @@ def playVideo(id, name):
         if titleNotify=="true":
             xbmc.sleep(5000)
             if xbmc.Player().isPlaying():
-                xbmc.executebuiltin('XBMC.Notification("Best Of Youtube", %s)' % name) 
+                xbmc.executebuiltin('XBMC.Notification(%s, %s, 5000, %s)' % (addonname, name, icon))
 
 def listLatest():
         content = getUrl("http://feeds.feedburner.com/bestofyoutubedotcom")
